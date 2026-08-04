@@ -35,10 +35,12 @@
             "default": true
         },
         "proxyConfiguration": {
+            "section": "proxyConfiguration",
             "title": "Proxy configuration",
             "type": "object",
-            "description": "Proxy settings provided by Apify. Uses Apify residential proxy by default.",
-            "default": { "useApifyProxy": true }
+            "description": "Select proxies to be used by your crawler.",
+            "prefill": { "useApifyProxy": true },
+            "editor": "proxy"
         }
     },
     "required": ["startUrls"]

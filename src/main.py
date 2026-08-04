@@ -22,12 +22,18 @@ async def main() -> None:
         max_concurrency = int(actor_input.get("maxConcurrency", 5))
         follow_pagination = bool(actor_input.get("followPagination", True))
 
+        # Wire up the proxy selected via the input schema's proxy editor.
+        proxy_config = await Actor.create_proxy_configuration(
+            actor_input.get("proxyConfiguration")
+        )
+
         request_list = await Actor.open_request_list("start", start_urls)
         dataset = await Actor.open_dataset()
         crawler = BeautifulSoupCrawler(
             request_list=request_list,
             max_requests_per_crawl=max_pages,
             max_concurrency=max_concurrency,
+            proxy_configuration=proxy_config,
         )
 
         @crawler.router.default_handler
