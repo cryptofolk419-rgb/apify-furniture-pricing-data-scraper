@@ -23,8 +23,9 @@ async def main() -> None:
         follow_pagination = bool(actor_input.get("followPagination", True))
 
         # Wire up the proxy selected via the input schema's proxy editor.
+        # apify 4.x: keyword-only, proxy dict goes in `actor_proxy_input`.
         proxy_config = await Actor.create_proxy_configuration(
-            actor_input.get("proxyConfiguration")
+            actor_proxy_input=actor_input.get("proxyConfiguration")
         )
 
         request_list = await Actor.open_request_list("start", start_urls)
