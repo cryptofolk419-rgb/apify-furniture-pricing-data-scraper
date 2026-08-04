@@ -21,7 +21,8 @@ from .extractor import extract_products
 
 
 async def main() -> None:
-    async with Actor:
+    await Actor.init()
+    try:
         actor_input = await Actor.get_input() or {}
         start_urls = [u["url"] for u in actor_input.get("startUrls", [])] or ["https://www.furniture.com/"]
         max_pages = int(actor_input.get("maxPagesPerCrawl", 50))
@@ -65,6 +66,11 @@ async def main() -> None:
                 )
 
         await crawler.run()
+    finally:
+        # Explicit, clean shutdown (avoids the benign asyncio teardown race that
+        # the `async with Actor:` context manager can trigger on sys.exit).
+        await Actor.exit()
+
 
 
 if __name__ == "__main__":
