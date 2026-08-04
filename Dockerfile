@@ -1,11 +1,7 @@
-# Use Apify's official Python base image (ships Python + the apify SDK).
+# Apify's official Python base image. Its ONBUILD step copies the repo into
+# /app and runs `pip install -r requirements.txt` automatically, so we don't
+# need (and must not add) a manual COPY/install that would target the wrong dir.
 FROM apify/actor-python:3.11
 
-# Copy the full repository so .actor/ specs and requirements.txt are available.
-COPY . ./app
-
-# Install dependencies.
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Run the Actor.
-CMD python -m src.main
+# The base image runs `python -m src` by convention, which executes
+# src/__main__.py (renamed from main.py to match that convention).
