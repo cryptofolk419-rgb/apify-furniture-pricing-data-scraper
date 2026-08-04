@@ -2,8 +2,9 @@
     "actorSpecification": 1,
     "name": "Furniture.com Pricing Scraper",
     "title": "Furniture.com Pricing Scraper",
-    "description": "Scrapes furniture product pricing data from furniture.com (an aggregator that links out to partner stores). Extracts price, sale price, stock status, and the outbound product URL for each listing.",
+    "description": "Scrape furniture prices, discounts & stock from furniture.com — the aggregator that links to 100s of furniture stores.",
     "version": "1.0.0",
+    "categories": ["ecommerce", "pricing", "research"],
     "meta": {
         "author": "cryptofolk419-rgb",
         "createdAt": "2026-08-04"
