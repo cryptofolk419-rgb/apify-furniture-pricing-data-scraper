@@ -14,10 +14,11 @@ casagear.com, lexmod.com, roomstogo.com, ...).
 import re
 import json
 from typing import Optional
+from datetime import datetime, timezone
 from urllib.parse import urljoin
 
 from apify import Actor
-from crawlee.beautifulsoup import BeautifulSoupCrawler, BeautifulSoupCrawlingStep
+from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
 
 # Matches one embedded product record in furniture.com's RSC payload.
 # The payload uses double-escaped JSON: \\"field\\":value
@@ -54,7 +55,7 @@ def extract_products(html: str, source_url: str) -> list[dict]:
             "averageRating": None if avg_raw in (None, "null") else float(avg_raw),
             "totalRatings": None if tot_raw in (None, "null") else int(tot_raw),
             "productUrl": _clean_url(url_raw),
-            "scrapedAt": Actor.get_current_datetime().isoformat() if Actor.is_initialized() else None,
+            "scrapedAt": datetime.now(timezone.utc).isoformat(),
         })
     return rows
 
@@ -76,16 +77,11 @@ async def main() -> None:
         )
 
         @crawler.router.default_handler
-        async def handle_listing(context: BeautifulSoupCrawlingStep) -> None:
+        async def handle_listing(context: BeautifulSoupCrawlingContext) -> None:
             context.log.info(f"Processing {context.request.url}")
-            html = context.http_response.read().decode("utf-8", "replace") if hasattr(context.http_response, "read") else str(context.soup)
-            # Prefer raw HTML (has the RSC payload); fall back to rendered soup.
-            try:
-                raw = await context.get_raw_html() if hasattr(context, "get_raw_html") else html
-            except Exception:
-                raw = html
-
-            products = extract_products(raw, context.request.url)
+            # Raw HTML carries the RSC payload with embedded product records.
+            html = context.http_response.read().decode("utf-8", "replace")
+            products = extract_products(html, context.request.url)
             if products:
                 await dataset.push_data(products)
                 context.log.info(f"  extracted {len(products)} products")
