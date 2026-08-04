@@ -35,7 +35,6 @@
             "default": true
         },
         "proxyConfiguration": {
-            "section": "proxyConfiguration",
             "title": "Proxy configuration",
             "type": "object",
             "description": "Select proxies to be used by your crawler.",
