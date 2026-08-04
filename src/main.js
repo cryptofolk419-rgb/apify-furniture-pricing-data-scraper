@@ -10,36 +10,10 @@
 import { Actor } from 'apify';
 import { CheerioCrawler } from 'crawlee';
 
+// Default seed URLs. Override via Actor input (startUrls).
 const DEFAULT_START_URLS = [
   // Example: 'https://www.example-furniture-store.com/products?category=sofas',
 ];
-
-const SCHEMA = {
-  type: 'object',
-  properties: {
-    startUrls: {
-      title: 'Start URLs',
-      type: 'array',
-      description: 'Seed URLs (category/listing pages) to scrape.',
-      items: { type: 'string' },
-      editor: 'requestListSources',
-      prefill: DEFAULT_START_URLS,
-    },
-    maxPagesPerCrawl: {
-      title: 'Max pages per crawl',
-      type: 'integer',
-      description: 'Limit on the number of pages to enqueue.',
-      default: 50,
-    },
-    proxyConfiguration: {
-      title: 'Proxy configuration',
-      type: 'object',
-      description: 'Proxy settings for the crawler.',
-      default: { useApifyProxy: true },
-    },
-  },
-  required: ['startUrls'],
-};
 
 async function main() {
   await Actor.init();
