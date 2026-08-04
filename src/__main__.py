@@ -34,7 +34,8 @@ async def main() -> None:
             actor_proxy_input=actor_input.get("proxyConfiguration")
         )
 
-        request_manager = await Actor.open_request_queue("start", start_urls)
+        request_manager = await Actor.open_request_queue()
+        await request_manager.add_requests(start_urls)
         dataset = await Actor.open_dataset()
         crawler = HttpCrawler(
             request_manager=request_manager,
