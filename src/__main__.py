@@ -6,10 +6,16 @@ furniture.com is a Next.js aggregator that links out to partner stores
 The pure extraction logic lives in src/extractor.py (no third-party deps, so it
 is unit-testable in isolation — see tests/test_extract.py). This module only
 wires the crawler to Apify's dataset.
+
+We use crawlee's HttpCrawler (not BeautifulSoupCrawler) because furniture.com
+embeds its product records as double-escaped JSON inside a <script> tag in the
+raw HTML response. Reading context.http_response gives us the exact bytes our
+regex in extractor.py expects.
 """
 
+import crawlee
 from apify import Actor
-from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
+from crawlee.crawlers import HttpCrawler, HttpCrawlingContext
 
 from .extractor import extract_products
 
@@ -28,20 +34,22 @@ async def main() -> None:
             actor_proxy_input=actor_input.get("proxyConfiguration")
         )
 
-        request_list = await Actor.open_request_list("start", start_urls)
+        request_manager = await Actor.open_request_queue("start", start_urls)
         dataset = await Actor.open_dataset()
-        crawler = BeautifulSoupCrawler(
-            request_list=request_list,
+        crawler = HttpCrawler(
+            request_manager=request_manager,
             max_requests_per_crawl=max_pages,
-            max_concurrency=max_concurrency,
+            concurrency_settings=crawlee.ConcurrencySettings(
+                max_concurrency=max_concurrency, desired_concurrency=max_concurrency
+            ),
             proxy_configuration=proxy_config,
         )
 
         @crawler.router.default_handler
-        async def handle_listing(context: BeautifulSoupCrawlingContext) -> None:
+        async def handle_listing(context: HttpCrawlingContext) -> None:
             context.log.info(f"Processing {context.request.url}")
             # Raw HTML carries the RSC payload with embedded product records.
-            html = context.http_response.read().decode("utf-8", "replace")
+            html = (await context.http_response.read()).decode("utf-8", "replace")
             products = extract_products(html, context.request.url)
             if products:
                 await dataset.push_data(products)
