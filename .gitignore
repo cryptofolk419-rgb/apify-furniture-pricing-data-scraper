@@ -1,7 +1,11 @@
-# Dependencies
-node_modules/
+# Python / Apify
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
 
-# Apify / Crawlee local storage
+# Apify local storage
 storage/
 apify_storage/
 *.local.json
@@ -10,11 +14,6 @@ apify_storage/
 .env
 .env.*
 !.env.example
-
-# Logs
-logs/
-*.log
-npm-debug.log*
 
 # Editor / OS
 .DS_Store

@@ -1,0 +1,45 @@
+{
+    "title": "Furniture.com Pricing Scraper Input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "Listing/category pages on furniture.com to start scraping from. Defaults to the homepage.",
+            "prefill": [
+                { "url": "https://www.furniture.com/" }
+            ],
+            "editor": "requestListSources"
+        },
+        "maxPagesPerCrawl": {
+            "title": "Max pages per crawl",
+            "type": "integer",
+            "description": "Maximum number of pages (including start URLs and pagination) to process.",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 5000
+        },
+        "maxConcurrency": {
+            "title": "Max concurrency",
+            "type": "integer",
+            "description": "How many pages to fetch in parallel.",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 50
+        },
+        "followPagination": {
+            "title": "Follow pagination / category links",
+            "type": "boolean",
+            "description": "If true, the crawler enqueues 'next page' and sub-category listing links it finds on each page.",
+            "default": true
+        },
+        "proxyConfiguration": {
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Proxy settings provided by Apify. Uses Apify residential proxy by default.",
+            "default": { "useApifyProxy": true }
+        }
+    },
+    "required": ["startUrls"]
+}
